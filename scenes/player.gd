@@ -1,8 +1,16 @@
 extends KinematicBody2D
 
-export (int) var speed = 150
+export (int) var speed = 120
 var velocity = Vector2()
 var sprite_direction = "right"
+var attacking = false
+
+
+func handle_attacking():
+	if Input.is_action_just_pressed("attack") and !attacking:
+		attacking = true
+		$AnimationPlayer.play("attack")
+		var _error = $AnimationPlayer.connect("animation_finished", self, "_on_AnimationPlayer_animation_finished", [], CONNECT_ONESHOT)
 
 func get_input():
 	velocity = Vector2()
@@ -18,11 +26,7 @@ func get_input():
 
 	return velocity
 
-func _physics_process(_delta):
-	get_input()
-	velocity = move_and_slide(velocity)
-
-func _process(_delta):
+func handle_sprite():
 	var animation_player = $AnimationPlayer
 	var sprite = $Sprite
 	if velocity.length() > 0:
@@ -30,8 +34,21 @@ func _process(_delta):
 			sprite.flip_h = false
 		elif velocity.x < 0:
 			sprite.flip_h = true
-		animation_player.play("run")
+
+		if !animation_player.is_playing():
+			animation_player.play("run")
 
 	elif velocity.length() == 0:
 		animation_player.stop()
 		sprite.frame = 0
+
+func _physics_process(_delta):
+	handle_attacking()
+	if !attacking:
+		get_input()
+		velocity = move_and_slide(velocity)
+		handle_sprite()
+
+func _on_AnimationPlayer_animation_finished(anim_name):
+	if anim_name == "attack":
+		attacking = false
