@@ -51,6 +51,8 @@ func _physics_process(delta):
 		"running":
 			if Input.is_action_just_pressed("attack"):
 				state = "attacking"
+				$AnimationPlayer.play("attack")
+				var _error = $AnimationPlayer.connect("animation_finished", self, "_on_AnimationPlayer_animation_finished", [], CONNECT_ONESHOT)
 				continue
 			if Input.is_action_just_pressed("dash") and velocity.length_squared() > 0:
 				state = "dashing"
@@ -61,9 +63,6 @@ func _physics_process(delta):
 			get_input()
 			velocity = move_and_slide(velocity * speed)
 			handle_running_sprite()
-		"attacking":
-			$AnimationPlayer.play("attack")
-			$AnimationPlayer.connect("animation_finished", self, "_on_AnimationPlayer_animation_finished", [], CONNECT_ONESHOT)
 		"dashing":
 			dash_timer -= delta
 			if dash_timer <= 0:

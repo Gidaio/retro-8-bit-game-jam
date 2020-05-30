@@ -4,7 +4,7 @@
 [ext_resource path="res://scenes/player.gd" type="Script" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 6.78284, 7.99573 )
+extents = Vector2( 4.54226, 7.99573 )
 
 [sub_resource type="Animation" id=2]
 resource_name = "attack"
@@ -54,7 +54,7 @@ tracks/0/keys = {
 "values": [ 0, 1, 0, 2 ]
 }
 
-[node name="KinematicBody2D" type="KinematicBody2D"]
+[node name="Player" type="KinematicBody2D"]
 script = ExtResource( 2 )
 dash_speed = 400
 dash_length = 0.1
@@ -66,7 +66,6 @@ shape = SubResource( 1 )
 texture = ExtResource( 1 )
 vframes = 3
 hframes = 4
-frame = 4
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/attack = SubResource( 2 )
