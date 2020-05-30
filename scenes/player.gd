@@ -5,26 +5,10 @@ export (int) var dash_speed = 300
 export (float) var dash_length = 0.2
 var velocity = Vector2()
 var sprite_direction = "right"
-var attacking = false
-var dashing = false
+var state = "running"
 var dash_timer = 0
 
 
-func occupied():
-	return attacking or dashing
-
-func handle_attacking():
-	if Input.is_action_just_pressed("attack") and !occupied():
-		attacking = true
-		$AnimationPlayer.play("attack")
-		var _error = $AnimationPlayer.connect("animation_finished", self, "_on_AnimationPlayer_animation_finished", [], CONNECT_ONESHOT)
-
-func handle_dashing():
-	if Input.is_action_just_pressed("dash") and !occupied():
-		dashing = true
-		$AnimationPlayer.stop()
-		$Sprite.frame = 4
-		dash_timer = dash_length
 
 func get_input():
 	velocity = Vector2()
@@ -40,7 +24,7 @@ func get_input():
 
 	return velocity
 
-func handle_sprite():
+func handle_running_sprite():
 	var animation_player = $AnimationPlayer
 	var sprite = $Sprite
 	if velocity.length() > 0:
@@ -56,21 +40,35 @@ func handle_sprite():
 		animation_player.stop()
 		sprite.frame = 0
 
-func _physics_process(delta):
-	if dashing:
-		dash_timer -= delta
-		if dash_timer <= 0:
-			dashing = false
-
-	handle_attacking()
-	handle_dashing()
-	if dashing:
-		velocity = move_and_slide(velocity.normalized() * dash_speed)
-	elif !occupied():
-		get_input()
-		velocity = move_and_slide(velocity * speed)
-		handle_sprite()
-
 func _on_AnimationPlayer_animation_finished(anim_name):
 	if anim_name == "attack":
-		attacking = false
+		state = "running"
+	
+	
+
+func _physics_process(delta):
+	match state:
+		"running":
+			if Input.is_action_just_pressed("attack"):
+				state = "attacking"
+				continue
+			if Input.is_action_just_pressed("dash") and velocity.length_squared() > 0:
+				state = "dashing"
+				$AnimationPlayer.stop()
+				$Sprite.frame = 4
+				dash_timer = dash_length
+				continue
+			get_input()
+			velocity = move_and_slide(velocity * speed)
+			handle_running_sprite()
+		"attacking":
+			$AnimationPlayer.play("attack")
+			$AnimationPlayer.connect("animation_finished", self, "_on_AnimationPlayer_animation_finished", [], CONNECT_ONESHOT)
+		"dashing":
+			dash_timer -= delta
+			if dash_timer <= 0:
+				state = "running"
+			velocity = move_and_slide(velocity.normalized() * dash_speed)
+			
+			
+
