@@ -30,8 +30,10 @@ func handle_running_sprite():
 	if velocity.length() > 0:
 		if velocity.x > 0:
 			sprite.flip_h = false
+			$Area2D.scale.x = 1
 		elif velocity.x < 0:
 			sprite.flip_h = true
+			$Area2D.scale.x = -1
 
 		if !animation_player.is_playing():
 			animation_player.play("run")
