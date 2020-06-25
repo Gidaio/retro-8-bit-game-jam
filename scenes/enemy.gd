@@ -16,3 +16,7 @@ func _ready():
 func _physics_process(_delta):
 	var direction = (player.global_position - global_position).normalized()
 	var _velocity = move_and_slide(direction * speed)
+	if direction.x < 0:
+		$Sprite.flip_h = false
+	else:
+		$Sprite.flip_h = true
