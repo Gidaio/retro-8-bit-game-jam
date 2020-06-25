@@ -43,8 +43,7 @@ func handle_running_sprite():
 func _on_AnimationPlayer_animation_finished(anim_name):
 	if anim_name == "attack":
 		state = "running"
-	
-	
+		$"Area2D/Hitbox".disabled = true
 
 func _physics_process(delta):
 	match state:
@@ -63,11 +62,13 @@ func _physics_process(delta):
 			get_input()
 			velocity = move_and_slide(velocity * speed)
 			handle_running_sprite()
+		"attacking":
+			$"Area2D/Hitbox".disabled = false
 		"dashing":
 			dash_timer -= delta
 			if dash_timer <= 0:
 				state = "running"
 			velocity = move_and_slide(velocity.normalized() * dash_speed)
-			
-			
 
+func _on_Area2D_body_entered(body: PhysicsBody2D):
+	body.get_hit()
