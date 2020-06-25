@@ -7,6 +7,7 @@ var player: KinematicBody2D
 
 func _ready():
 	player = $"../Player"
+	$AnimationPlayer.play("Move")
 	if !player:
 		print_debug("No player!")
 		queue_free()
