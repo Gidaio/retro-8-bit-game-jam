@@ -73,4 +73,4 @@ func _physics_process(delta):
 			velocity = move_and_slide(velocity.normalized() * dash_speed)
 
 func _on_Area2D_body_entered(body: PhysicsBody2D):
-	body.get_hit()
+	body.get_hit(30)
